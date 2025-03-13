@@ -9,6 +9,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/software/anaconda3/lib
 
 export OMP_NUM_THREADS=8  # Limits pytorch to spawn at most num cpus cores threads
 export OPENBLAS_NUM_THREADS=1  # Shuts off numpy multithreading, to avoid threads spawning other threads.
+
 #torchrun --nnodes=1 --nproc_per_node=1 --max_restarts=1 --rdzv_id=42353467 --rdzv_backend=c10d train.py --id train_id_000 --batch_size 8 --setting all --root_dir ~/code/leaderboard2_human_data/database/training_v0_2023_11_23 --logdir ~/code/leaderboard2_human_data/training_runs/debug --use_controller_input_prediction 1 --use_wp_gru 1 --use_discrete_command 1 --use_tp 1 --continue_epoch 1 --cpu_cores 8 --num_repetitions 1
 torchrun --nnodes=1 --nproc_per_node=1 --max_restarts=1 --rdzv_id=$SLURM_JOB_ID --rdzv_backend=c10d \
     train.py --id train_id_012 --crop_image 1 --use_new_target_speeds 1 --seed 2 --epochs 1 --batch_size 5 --lr 1.875e-4 --setting all \

@@ -80,7 +80,10 @@ class CARLA_Data(Dataset):  # pylint: disable=locally-disabled, invalid-name
       routes = next(os.walk(sub_root))[1]
 
       for route in routes:  # loop over individual routes within this scenario folder
-        repetition = int(re.search('_Rep(\\d+)', route).group(1))
+        try:
+            repetition = int(re.search('_Rep(\\d+)', route).group(1))
+        except:
+            continue
         if repetition >= self.config.num_repetitions:
           continue
 
