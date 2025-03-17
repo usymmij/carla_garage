@@ -337,6 +337,8 @@ class SensorAgent(autonomous_agent.AutonomousAgent):
       camera = cv2.imdecode(compressed_image_i, cv2.IMREAD_UNCHANGED)
 
       rgb_pos = cv2.cvtColor(camera, cv2.COLOR_BGR2RGB)
+      cv2.imshow("a", rgb_pos)
+      cv2.waitKey(1)
       rgb_pos = t_u.crop_array(self.config, rgb_pos)
 
       # Switch to pytorch channel first order
