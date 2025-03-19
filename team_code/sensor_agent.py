@@ -35,6 +35,7 @@ import jsonpickle
 import jsonpickle.ext.numpy as jsonpickle_numpy
 import ujson  # Like json but faster
 import gzip
+import datetime
 
 jsonpickle_numpy.register_handlers()
 jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
@@ -218,6 +219,7 @@ class SensorAgent(autonomous_agent.AutonomousAgent):
       self.save_path = None
 
     self.metric_info = {}
+    self.vid = None
 
   def _init(self):
     # The CARLA leaderboard does not expose the lat lon reference value of the GPS which make it impossible to use the
@@ -337,8 +339,16 @@ class SensorAgent(autonomous_agent.AutonomousAgent):
       camera = cv2.imdecode(compressed_image_i, cv2.IMREAD_UNCHANGED)
 
       rgb_pos = cv2.cvtColor(camera, cv2.COLOR_BGR2RGB)
-      cv2.imshow("a", rgb_pos)
-      cv2.waitKey(1)
+
+      if self.vid is None:
+        path = os.path.join('/mnt/scratch/saves/videos/', str(datetime.datetime.now()).replace(' ', '-').replace(':','')[:17]+'.avi')
+        fourcc = cv2.VideoWriter_fourcc(*'XVID') 
+        self.vid = cv2.VideoWriter(path, fourcc, 20, (rgb_pos.shape[1], 
+                                                      rgb_pos.shape[0]))
+
+      vid_fr = np.asarray(rgb_pos, np.uint8)
+      self.vid.write(vid_fr)
+
       rgb_pos = t_u.crop_array(self.config, rgb_pos)
 
       # Switch to pytorch channel first order
@@ -802,6 +812,7 @@ class SensorAgent(autonomous_agent.AutonomousAgent):
     The leaderboard client doesn't properly clear up the agent after the route finishes so we need to do it here.
     Also writes logging files to disk.
     """
+    self.vid.release()
     if self.save_path is not None:
       self.lon_logger.dump_to_json()
       if len(self.nets[0].speed_histogram) > 0:
